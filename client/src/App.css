@@ -308,6 +308,16 @@
   color: #059669;
 }
 
+.profit {
+  font-weight: 600;
+  color: #059669;
+}
+
+.loss {
+  font-weight: 600;
+  color: #dc2626;
+}
+
 .total-distributed {
   text-align: right;
   font-weight: 600;

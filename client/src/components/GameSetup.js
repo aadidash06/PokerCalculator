@@ -1,6 +1,6 @@
 import React from 'react';
 
-function GameSetup({ numPlayers, onNumPlayersChange, potAmount, onPotAmountChange, payoutMethod, onPayoutMethodChange }) {
+function GameSetup({ numPlayers, onNumPlayersChange, potAmount, onPotAmountChange, startingChipValue, onStartingChipValueChange, buyInAmount, onBuyInAmountChange, payoutMethod, onPayoutMethodChange }) {
   return (
     <div className="game-setup">
       <h2>Game Setup</h2>
@@ -29,6 +29,43 @@ function GameSetup({ numPlayers, onNumPlayersChange, potAmount, onPotAmountChang
           min="0"
           step="0.01"
         />
+      </div>
+
+      <div className="setup-group">
+        <label htmlFor="startingChipValue">Starting Chip Value (per player):</label>
+        <input
+          id="startingChipValue"
+          type="number"
+          value={startingChipValue}
+          onChange={(e) => onStartingChipValueChange(e.target.value)}
+          placeholder="Enter starting chip value"
+          min="0"
+          step="1"
+        />
+        <small style={{display: 'block', marginTop: '0.25rem', color: '#6b7280'}}>
+          The chip point value each player started with
+        </small>
+      </div>
+
+      <div className="setup-group">
+        <label htmlFor="buyInAmount">Buy-in Amount per Player ($):</label>
+        <input
+          id="buyInAmount"
+          type="number"
+          value={buyInAmount}
+          onChange={(e) => onBuyInAmountChange(e.target.value)}
+          placeholder="Enter buy-in amount"
+          min="0"
+          step="0.01"
+        />
+        <small style={{display: 'block', marginTop: '0.25rem', color: '#6b7280'}}>
+          Used only for profit/loss tracking - doesn't affect payouts
+        </small>
+        {buyInAmount && numPlayers && (
+          <small style={{display: 'block', marginTop: '0.25rem', color: '#6b7280'}}>
+            Total buy-ins: ${(parseFloat(buyInAmount) * numPlayers).toFixed(2)}
+          </small>
+        )}
       </div>
 
       <div className="setup-group">

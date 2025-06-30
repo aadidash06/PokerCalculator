@@ -16,7 +16,7 @@ const calculateChipValue = (chips) => {
          (chips.black * 1000);
 };
 
-const calculatePayouts = (players, potAmount, payoutMethod) => {
+const calculatePayouts = (players, potAmount, startingChipValue, buyInAmount, payoutMethod) => {
   const playersWithValues = players.map(player => ({
     ...player,
     chipValue: calculateChipValue(player.chips)
@@ -29,21 +29,31 @@ const calculatePayouts = (players, potAmount, payoutMethod) => {
   if (payoutMethod === 'percentage') {
     const totalChipValue = playersWithValues.reduce((sum, player) => sum + player.chipValue, 0);
     
-    results = playersWithValues.map((player, index) => ({
-      name: player.name,
-      chipValue: player.chipValue,
-      rank: index + 1,
-      payout: totalChipValue > 0 ? (player.chipValue / totalChipValue) * potAmount : 0
-    }));
+    results = playersWithValues.map((player, index) => {
+      const payout = totalChipValue > 0 ? (player.chipValue / totalChipValue) * potAmount : 0;
+      return {
+        name: player.name,
+        chipValue: player.chipValue,
+        rank: index + 1,
+        payout: payout,
+        chipGainLoss: player.chipValue - startingChipValue,
+        profitLoss: payout - buyInAmount
+      };
+    });
   } else {
     const payoutPercentages = [0.5, 0.3, 0.2];
     
-    results = playersWithValues.map((player, index) => ({
-      name: player.name,
-      chipValue: player.chipValue,
-      rank: index + 1,
-      payout: index < 3 ? potAmount * payoutPercentages[index] : 0
-    }));
+    results = playersWithValues.map((player, index) => {
+      const payout = index < 3 ? potAmount * payoutPercentages[index] : 0;
+      return {
+        name: player.name,
+        chipValue: player.chipValue,
+        rank: index + 1,
+        payout: payout,
+        chipGainLoss: player.chipValue - startingChipValue,
+        profitLoss: payout - buyInAmount
+      };
+    });
   }
 
   return results;
@@ -51,7 +61,7 @@ const calculatePayouts = (players, potAmount, payoutMethod) => {
 
 app.post('/api/calculate', (req, res) => {
   try {
-    const { players, potAmount, payoutMethod } = req.body;
+    const { players, potAmount, startingChipValue, buyInAmount, payoutMethod } = req.body;
 
     if (!players || !Array.isArray(players) || players.length < 2 || players.length > 8) {
       return res.status(400).json({ error: 'Invalid number of players. Must be between 2 and 8.' });
@@ -82,7 +92,7 @@ app.post('/api/calculate', (req, res) => {
       }
     }
 
-    const results = calculatePayouts(players, potAmount, payoutMethod);
+    const results = calculatePayouts(players, potAmount, startingChipValue || 0, buyInAmount || 0, payoutMethod);
 
     res.json({ 
       success: true, 

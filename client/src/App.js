@@ -7,6 +7,8 @@ import Results from './components/Results';
 function App() {
   const [numPlayers, setNumPlayers] = useState(2);
   const [potAmount, setPotAmount] = useState('');
+  const [startingChipValue, setStartingChipValue] = useState('');
+  const [buyInAmount, setBuyInAmount] = useState('');
   const [payoutMethod, setPayoutMethod] = useState('percentage');
   const [players, setPlayers] = useState([]);
   const [results, setResults] = useState(null);
@@ -64,7 +66,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/calculate', {
+      const response = await fetch('http://localhost:5001/api/calculate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,6 +74,8 @@ function App() {
         body: JSON.stringify({
           players,
           potAmount: parseFloat(potAmount),
+          startingChipValue: parseFloat(startingChipValue) || 0,
+          buyInAmount: parseFloat(buyInAmount) || 0,
           payoutMethod
         }),
       });
@@ -92,6 +96,8 @@ function App() {
   const resetGame = () => {
     setResults(null);
     setPotAmount('');
+    setStartingChipValue('');
+    setBuyInAmount('');
     initializePlayers(numPlayers);
     setError('');
   };
@@ -109,6 +115,10 @@ function App() {
           onNumPlayersChange={handleNumPlayersChange}
           potAmount={potAmount}
           onPotAmountChange={setPotAmount}
+          startingChipValue={startingChipValue}
+          onStartingChipValueChange={setStartingChipValue}
+          buyInAmount={buyInAmount}
+          onBuyInAmountChange={setBuyInAmount}
           payoutMethod={payoutMethod}
           onPayoutMethodChange={setPayoutMethod}
         />
@@ -138,7 +148,7 @@ function App() {
           )}
         </div>
 
-        {results && <Results results={results} potAmount={parseFloat(potAmount)} />}
+        {results && <Results results={results} potAmount={parseFloat(potAmount)} startingChipValue={parseFloat(startingChipValue) || 0} buyInAmount={parseFloat(buyInAmount) || 0} />}
       </main>
     </div>
   );

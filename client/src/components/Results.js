@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Results({ results, potAmount }) {
+function Results({ results, potAmount, startingChipValue, buyInAmount }) {
   return (
     <div className="results">
       <h2>Results</h2>
@@ -13,6 +13,8 @@ function Results({ results, potAmount }) {
             <th>Player</th>
             <th>Chip Value</th>
             <th>Payout</th>
+            {startingChipValue > 0 && <th>Chip +/-</th>}
+            {buyInAmount > 0 && <th>Money +/-</th>}
           </tr>
         </thead>
         <tbody>
@@ -27,6 +29,16 @@ function Results({ results, potAmount }) {
               <td>{result.name}</td>
               <td>{result.chipValue.toLocaleString()} points</td>
               <td className="payout-amount">${result.payout.toFixed(2)}</td>
+              {startingChipValue > 0 && result.chipGainLoss !== undefined && (
+                <td className={result.chipGainLoss >= 0 ? "profit" : "loss"}>
+                  {result.chipGainLoss >= 0 ? '+' : ''}{result.chipGainLoss.toLocaleString()} pts
+                </td>
+              )}
+              {buyInAmount > 0 && result.profitLoss !== undefined && (
+                <td className={result.profitLoss >= 0 ? "profit" : "loss"}>
+                  {result.profitLoss >= 0 ? '+' : ''}${result.profitLoss.toFixed(2)}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
